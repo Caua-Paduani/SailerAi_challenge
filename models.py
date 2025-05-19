@@ -18,5 +18,13 @@ class ActionableOutput(BaseModel):
     suggested_reply: str
     next_steps: List[str]
     additional_context: Optional[Dict[str, Any]] = None
+#get intent from the message
+class Intent(BaseModel):
+    intent_type: str
+    confidence_score: float
+    additional_context: Optional[Dict[str, Any]] = None
     
+class AnalysisResult(BaseModel):
+    analysis_type: str
+    analysis_result: str
     

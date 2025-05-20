@@ -1,0 +1,88 @@
+{
+    "prospect1": {
+      "name": "Acme Corporation",
+      "industry": "Technology",
+      "company_size": "500-1000 employees",
+      "annual_revenue": "$50M-100M",
+      "lead_score": 85,
+      "technologies_used": ["Salesforce", "AWS", "Slack", "HubSpot"],
+      "previous_interactions": [
+        {"date": "2023-05-10", "type": "Email", "summary": "Showed interest in sales automation"},
+        {"date": "2023-05-15", "type": "Meeting", "summary": "Initial product presentation"},
+        {"date": "2023-05-22", "type": "Demo", "summary": "Technical demonstration, with positive feedback"}
+      ],
+      "pain_points": ["Manual sales process", "Lead leakage", "Difficulty tracking pipeline"],
+      "decision_makers": [
+        {"name": "Maria Silva", "role": "Sales Director", "email": "maria@acme.com"},
+        {"name": "John Pereira", "role": "CTO", "email": "john@acme.com"}
+      ],
+      "buying_stage": "Solution Evaluation",
+      "next_steps": "Present commercial proposal",
+      "budget": "$100,000 annually"
+    },
+    
+    "prospect2": {
+      "name": "TechStart Ltd",
+      "industry": "SaaS",
+      "company_size": "50-100 employees",
+      "annual_revenue": "$5M-10M",
+      "lead_score": 65,
+      "technologies_used": ["Google Workspace", "Asana", "Mailchimp"],
+      "previous_interactions": [
+        {"date": "2023-06-01", "type": "Webinar", "summary": "Attended webinar on sales automation"},
+        {"date": "2023-06-05", "type": "Email", "summary": "Requested more information about pricing"}
+      ],
+      "pain_points": ["Sales team scalability", "Low lead conversion"],
+      "decision_makers": [
+        {"name": "Ana Costa", "role": "CEO", "email": "ana@techstart.com"}
+      ],
+      "buying_stage": "Discovery",
+      "next_steps": "Conduct product demonstration",
+      "budget": "Not yet defined"
+    },
+    
+    "prospect3": {
+      "name": "National Industries Inc.",
+      "industry": "Manufacturing",
+      "company_size": "1000+ employees",
+      "annual_revenue": "$100M+",
+      "lead_score": 92,
+      "technologies_used": ["SAP", "Microsoft Teams", "LinkedIn Sales Navigator"],
+      "previous_interactions": [
+        {"date": "2023-04-20", "type": "Trade Show", "summary": "Initial contact at SalesCon 2023"},
+        {"date": "2023-04-25", "type": "Call", "summary": "Discussion about specific needs"},
+        {"date": "2023-05-05", "type": "Visit", "summary": "Meeting with board for detailed presentation"},
+        {"date": "2023-05-15", "type": "Email", "summary": "Sent additional technical materials"}
+      ],
+      "pain_points": ["Disconnected sales processes", "Lack of real-time visibility", "Revenue forecasting challenges"],
+      "decision_makers": [
+        {"name": "Robert Mendes", "role": "Commercial Director", "email": "robert@nationalind.com"},
+        {"name": "Carla Almeida", "role": "CFO", "email": "carla@nationalind.com"},
+        {"name": "Paul Rodriguez", "role": "CEO", "email": "paul@nationalind.com"}
+      ],
+      "buying_stage": "Negotiation",
+      "next_steps": "Finalize proposal and contract terms",
+      "budget": "$250,000 annually approved"
+    },
+  
+    "prospect4": {
+      "name": "Future Digital Bank",
+      "industry": "Financial Services",
+      "company_size": "100-500 employees",
+      "annual_revenue": "$20M-50M",
+      "lead_score": 78,
+      "technologies_used": ["Oracle", "Zendesk", "Jira", "Power BI"],
+      "previous_interactions": [
+        {"date": "2023-06-10", "type": "LinkedIn", "summary": "Response to published content on CRM automation"},
+        {"date": "2023-06-12", "type": "Email", "summary": "Inquired about security and compliance features"}
+      ],
+      "pain_points": ["Regulatory compliance", "Integration with legacy banking systems", "Multichannel customer service"],
+      "decision_makers": [
+        {"name": "Fernanda Lima", "role": "Head of Innovation", "email": "fernanda@futuredigital.com"},
+        {"name": "Richard Torres", "role": "CIO", "email": "richard@futuredigital.com"}
+      ],
+      "buying_stage": "Technical Evaluation",
+      "next_steps": "Schedule POC (Proof of Concept)",
+      "budget": "$150,000 annually pending approval"
+    }
+  }

@@ -21,9 +21,9 @@ async def process_conversation(request: ConversationRequest):
     Returns a structured response with analysis and suggested reply.
     """
 try: 
-    response = process_message(request)
-    return response.json()
+        response = process_message(request)
+        return response.json()
 except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
     
-@app.get
+

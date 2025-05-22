@@ -1,8 +1,10 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 import json
 from sentence_transformers import SentenceTransformer
 import numpy as np
 import os
+import faiss
+
 class KnowledgeAugmentationTool:
     """A multi-purpose tool that can fetch information from different sources."""
 
@@ -106,12 +108,26 @@ class RAGtool:
 
     def _matches_filters(self, doc:Dict, filters:Dict) -> bool:
         """Check if the document matches the filters"""
-        for key,value in filters.items():
-            if key not in doc["metadata"] or doc["metadata"][key] !=value:
+        for key, value in filters.items():
+            if key not in doc["metadata"] or doc["metadata"][key] != value:
                 return False
         return True
             
-            
+    def _extract_metadata(self, filename: str, content: str) -> Dict:
+        """Extract metadata from document filename and content"""
+        metadata = {}
+        
+        # Extract document type based on filename
+        if "product" in filename.lower():
+            metadata["type"] = "product"
+        elif "pricing" in filename.lower():
+            metadata["type"] = "pricing"
+        elif "objection" in filename.lower():
+            metadata["type"] = "sales_playbook"
+        else:
+            metadata["type"] = "general"
+        
+        return metadata
 
     def load_documents(self):
         # load documents from the knowledge base
@@ -121,7 +137,7 @@ class RAGtool:
             os.makedirs(kb_path,exist_ok=True)
             print(f"Directory {kb_path} created, please add some documents...")
             return documents
-        
+        #verify if there are any .txt files in the knowledge base
         txt_files = [f for f in os.listdir(kb_path) if f.endswith(".txt")]
         if not txt_files:
             print(f"No .txt documents found in {kb_path}")
@@ -130,17 +146,20 @@ class RAGtool:
         for file in txt_files:
             file_path = os.path.join(kb_path,file)
         try:
-            with open("data/knowledge_base/doc1.txt", "r") as file:
+            #load the content of the file
+            with open(file_path, 'r') as file:
                 content = file.read()
-                metadata = self.extract_metadata(file_path)
+                #extract metadata from the file 
+                metadata = self._extract_metadata(file, content)
                 documents.append({
                     "filename":file,
                     "content":content,
                     "metadata":metadata
                 })
+                print(f"Loaded document {file} with metadata: {metadata}")
         except Exception as e:
             print(f"Error loading document {file}: {e}")
-            
+            return documents
 
     def create_index(self):
         # Implementation of create_index method

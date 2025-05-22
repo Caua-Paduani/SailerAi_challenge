@@ -44,6 +44,7 @@ class CRMtool:
 #load CRM data 
     def __init__(self):
         self.crm_data = self.load_crm_data()
+        #fetch details from CRM
     def fetch_prospect_details(self, prospect_id:str) -> Dict:
         """Fetch prospect details from CRM"""
         if not prospect_id:
@@ -63,6 +64,7 @@ class CRMtool:
         """Load CRM data from JSON file"""
         crm_data_path = "data/crm_data.json"
         try:
+            #load the CRM data from the JSON file as read only
             with open(crm_data_path, "r") as file:
                 return json.load(file)
         except FileNotFoundError:
@@ -73,6 +75,7 @@ class RAGtool:
     """Tool for interacting with the knowledge base."""
 
     def __init__(self):
+        #load the model
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
         self.documents = self.load_documents()
         self.index = self.create_index()
@@ -90,7 +93,7 @@ class RAGtool:
             if idx != -1 and idx < len(self.documents):
                 doc = self.documents[idx]
                 
-                # Aplica filtros se fornecidos
+                # apply  filters if provided
                 if filters and not self._matches_filters(doc, filters):
                     continue
                 
@@ -162,5 +165,22 @@ class RAGtool:
             return documents
 
     def create_index(self):
-        # Implementation of create_index method
+        # create a FAISS index for semantic search
+        if not self.documents:
+            print("No documents to index")
+            dimension = 384 
+            return faiss.IndexFlatL2(dimension)
         
+        #generate embeddings for all documents
+        texts = [doc["content"] for doc in self.documents]
+        embeddings = self.model.encode(texts)
+        dimension = embeddings.shape[1]
+        
+        #create a FAISS index
+        index = faiss.IndexFlatL2(dimension)
+        #add the embeddings to the index
+        index.add(np.array(embeddings).astype("float32"))
+        print(f"Created index with {len(texts)} documents")
+        return index
+    
+   

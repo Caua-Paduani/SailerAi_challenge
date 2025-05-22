@@ -1,15 +1,45 @@
-from typing import Dict
+from typing import Dict, Optional
 import json
+from sentence_transformers import SentenceTransformer
+import numpy as np
+import os
 class KnowledgeAugmentationTool:
     """A multi-purpose tool that can fetch information from different sources."""
 
     def __init__(self):
         self.crm_tool = CRMtool()# for CRM data
         self.rag_tool = RAGtool() #knowledge base
+
+
+#execute the fetch_prospect_details tool or query_knowledge_base tool if needed
+    def execute(self, tool_name:str, tool_params:Dict) -> Dict:
+        try:
+            if tool_name == "fetch_prospect_details":
+                result = self.crm_tool.fetch_prospect_details(tool_params.get("prospect_id"))
+            elif tool_name == "query_knowledge_base":
+                result = self.rag_tool.query_knowledge_base(tool_params.get("query"), tool_params.get("filters"))
+            else:
+                return{
+                    "success":False,
+                    "error_message":f"Tool {tool_name} not found"
+                }
+            return{
+                "tool_name":tool_name,
+                "input_parameters": tool_params,   
+                "output_result": result,           
+                "success": True,                   
+                "error_message": None 
+            }
+        except Exception as e:
+            return{
+                "success":False,
+                "error_message":str(e)
+            }
+
 #CRM tool        
 class CRMtool:
     """Tool for interacting with the CRM system."""
-
+#load CRM data 
     def __init__(self):
         self.crm_data = self.load_crm_data()
     def fetch_prospect_details(self, prospect_id:str) -> Dict:
@@ -26,7 +56,7 @@ class CRMtool:
                 "prospect_found":False,
                 "error":f"Prospect with ID {prospect_id} not found"
             }
-    #load CRM data from JSON file
+    #function to load CRM data from JSON file
     def load_crm_data(self) -> Dict:
         """Load CRM data from JSON file"""
         crm_data_path = "data/crm_data.json"
@@ -36,14 +66,82 @@ class CRMtool:
         except FileNotFoundError:
             return {"error": "CRM data file not found"}
         
-#RAG tool
+
 class RAGtool:
     """Tool for interacting with the knowledge base."""
 
     def __init__(self):
-        self.knowledge_base = self.load_knowledge_base()
-        
-        
+        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.documents = self.load_documents()
+        self.index = self.create_index()
+    def query_knowledge_base(self,query:str, filters: Optional[Dict] = None):
+        """Search the knowledge base for imformations matching the query"""
+        if not query:
+            return {"error": "Query is required"}
+        #convert query to vector
+        query_embedding = self.model.encode([query])
+        k = 3
+        #search for the k most similar documents
+        D,I = self.index.search(np.array([query_embedding],dtype=np.float32),k)
+        results = []
+        for i, idx in enumerate(I[0]):
+            if idx != -1 and idx < len(self.documents):
+                doc = self.documents[idx]
+                
+                # Aplica filtros se fornecidos
+                if filters and not self._matches_filters(doc, filters):
+                    continue
+                
+                results.append({
+                    "content": doc["content"],
+                    "source": doc["filename"],
+                    "metadata": doc["metadata"],
+                    "relevance_score": float(D[0][i])
+                })
+        return {
+            "results": results,
+            "query": query,
+            "filters_applied": filters is not None
+        }
 
-    
-  
+    def _matches_filters(self, doc:Dict, filters:Dict) -> bool:
+        """Check if the document matches the filters"""
+        for key,value in filters.items():
+            if key not in doc["metadata"] or doc["metadata"][key] !=value:
+                return False
+        return True
+            
+            
+
+    def load_documents(self):
+        # load documents from the knowledge base
+        kb_path = "data/knowledge_base"
+        documents = []
+        if not os.path.exists(kb_path):
+            os.makedirs(kb_path,exist_ok=True)
+            print(f"Directory {kb_path} created, please add some documents...")
+            return documents
+        
+        txt_files = [f for f in os.listdir(kb_path) if f.endswith(".txt")]
+        if not txt_files:
+            print(f"No .txt documents found in {kb_path}")
+            return documents
+        
+        for file in txt_files:
+            file_path = os.path.join(kb_path,file)
+        try:
+            with open("data/knowledge_base/doc1.txt", "r") as file:
+                content = file.read()
+                metadata = self.extract_metadata(file_path)
+                documents.append({
+                    "filename":file,
+                    "content":content,
+                    "metadata":metadata
+                })
+        except Exception as e:
+            print(f"Error loading document {file}: {e}")
+            
+
+    def create_index(self):
+        # Implementation of create_index method
+        

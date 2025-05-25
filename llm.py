@@ -1,7 +1,7 @@
 import os 
 from openai import OpenAI
 from dotenv import load_dotenv
-from typing import Dict,List
+from typing import Dict,List,Optional
 import json
 load_dotenv()
 
@@ -129,3 +129,85 @@ def decide_tool_usage(analysis_result: Dict, conversation_history: List[Dict], c
     )
     
     return json.loads(response.choices[0].message.content)
+
+def synthesize_results(analysis_result: Dict, conversation_history: List[Dict], current_prospect_message: str,tool_usage_results: Optional[Dict] = None) -> Dict:
+    """
+    Synthesize all information into a final structured response.
+    
+    Args:
+        analysis_result: The initial analysis from analyze_message()
+        conversation_history: List of previous messages
+        current_prospect_message: The latest message from the prospect
+        tool_usage_results: Results from any tools that were called (optional)
+        
+    Returns:
+        Structured final response with analysis, suggested response, next steps, etc.
+    """
+    formatted_conversation = "\n".join([
+        f"{msg['sender']}: {msg['content']}"
+        for msg in conversation_history
+    ])
+
+    tool_usage_info = "No tools were used"
+    if tool_usage_results:
+        tool_name = tool_usage_results.get("tool_name")
+        params = tool_usage_results.get("tool_params")
+        success = tool_usage_results.get("success",False)
+        output = tool_usage_results.get("output_result")
+        tool_usage_info =f"""Tool: {tool_name}
+        Parameters: {params}
+        Success: {success}
+        Output: {output}
+        """
+
+
+    prompt = f"""
+    You are an AI sales assistant synthesizing a final response  based on all available information.
+
+    CONVERSATION HISTORY:
+    {formatted_conversation}
+
+    CURRENT PROSPECT MESSAGE:
+    {current_prospect_message}
+
+    ANALYSIS RESULT:
+    {json.dumps(analysis_result, indent=2)}
+
+    TOOL USAGE RESULTS:
+    {tool_usage_info}
+    
+     
+    Based on all this information, generate a comprehensive response in the following JSON format:
+    {{
+        "detailed_analysis": "A thorough summary of your understanding of the prospect's message and context",
+        "suggested_response_draft": "A concise, helpful, and contextually appropriate response to the prospect",
+        "internal_next_steps": [
+            {{"action": "ACTION_TYPE", "details": {{"key": "value"}}}},
+            ...
+        ],
+        "tool_usage_log": {{
+            "tools_used": ["tool_name"] or [],
+            "inputs": {{}},
+            "output_summary": "Brief summary of tool outputs"
+        }},
+        "confidence_score": An estimated confidence score between 0.0 and 1.0 in the suggested_response_draft and internal_next_steps,
+        "reasoning_trace": "Brief explanation of why you chose certain tools or formulated this response"
+    }}
+    
+    Make sure the suggested_response_draft is professional, addresses the prospect's needs directly, and leverages any information retrieved from tools.
+    The internal_next_steps should be practical actions for the sales team to take.
+    The confidence_score should reflect how certain you are that your response is appropriate and helpful.
+    """
+    
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": "You are an AI sales assistant synthesizing a final response."},
+            {"role": "user", "content": prompt}
+        ],
+        response_format={"type": "json_object"},
+        temperature=0.3
+    )
+
+    return json.loads(response.choices[0].message.content)
+

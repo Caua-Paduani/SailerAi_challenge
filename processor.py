@@ -1,6 +1,6 @@
 
 from models import ConversationRequest, ActionableOutput
-from llm import analyze_message, decide_tool_usage
+from llm import analyze_message, decide_tool_usage, synthesize_results
 from tools import KnowledgeAugmentationTool
 
 async def process_message(request: ConversationRequest) -> ActionableOutput:
@@ -13,6 +13,7 @@ async def process_message(request: ConversationRequest) -> ActionableOutput:
     Returns:
         ActionableOutput with analysis and response
     """
+    tool_usage_results = {}
     #converts pydantic object to a dictionary
     conversation_history = [
         {
@@ -64,7 +65,19 @@ current_prospect_message = request.current_prospect_message)
                     "error": execution_result.get("error_message","Tool execution failed")
                 }
 
+        final_response = synthesize_results(analysis_result = analysis_result,
+                                            conversation_history = conversation_history,
+                                            current_prospect_message = request.current_prospect_message.content,
+                                            tool_usage_results = tool_usage_results)
         
+        return ActionableOutput(
+            detailed_analysis = final_response.get("detailed_analysis",""),
+            suggested_response_draft = final_response.get("suggested_response_draft",""),
+            internal_next_steps = final_response.get("internal_next_steps",[]),
+            tool_usage_log = final_response.get("tool_usage_log",{}),
+            confidence_score = final_response.get("confidence_score",0.0),
+            reasoning_trace = final_response.get("reasoning_trace","")
+        )
     
   
      

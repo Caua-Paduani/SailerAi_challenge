@@ -163,6 +163,41 @@ The system can be configured through environment variables:
    - Supported formats: `.txt` files
    - Organize by type (products, pricing, etc.)
 
+3. **Golden Dataset**
+   - Located at `data/golden_dataset.json`
+   - Contains test cases for:
+     - Initial pricing inquiries
+     - Technical questions
+     - Objection handling
+     - Feature inquiries
+     - Follow-up scenarios
+   - Each test case includes:
+     - Conversation history
+     - Current message
+     - Ground truth (expected intent, tools, responses)
+   - Used for:
+     - System evaluation
+     - Response quality testing
+     - Tool selection validation
+   - Format example:
+   ```json
+   {
+     "test_cases": [
+       {
+         "id": "test_001",
+         "description": "Initial pricing inquiry",
+         "conversation_history": [...],
+         "current_message": {...},
+         "ground_truth": {
+           "intent": {...},
+           "expected_tools": {...},
+           "ideal_response": {...}
+         }
+       }
+     ]
+   }
+   ```
+
 ## Contributing
 
 1. Fork the repository

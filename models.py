@@ -5,7 +5,7 @@ from datetime import datetime
 class Message(BaseModel):
     sender: str
     content: str
-    timestamp: datetime.now = Field(default_factory = datetime.now)
+    timestamp: datetime = Field(default_factory=datetime.now)
 # Define the ConversationRequest model
 class ConversationRequest(BaseModel):
     conversation_history: List[Message]

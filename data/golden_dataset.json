@@ -1,0 +1,202 @@
+{
+  "test_cases": [
+    {
+      "id": "pricing_inquiry_001",
+      "description": "Initial pricing inquiry for enterprise",
+      "conversation_history": [],
+      "current_message": {
+        "sender": "prospect",
+        "content": "What's your pricing for enterprise customers?",
+        "timestamp": "2024-03-20T10:00:00Z"
+      },
+      "ground_truth": {
+        "intent": {
+          "primary": "pricing_inquiry",
+          "confidence": 0.95,
+          "entities": ["enterprise", "pricing"]
+        },
+        "expected_tools": {
+          "name": "knowledge_base",
+          "params": {
+            "query": "enterprise pricing plans",
+            "document_types": ["pricing"]
+          }
+        },
+        "ideal_response": {
+          "content": "Our enterprise pricing is customized based on your organization's specific needs. Generally, our enterprise plans start at $10,000/month and include advanced features like dedicated support, custom integrations, and SLA guarantees. Would you like me to arrange a detailed pricing discussion with one of our enterprise specialists?",
+          "next_steps": ["Schedule pricing consultation", "Send enterprise features overview"]
+        }
+      }
+    },
+    {
+      "id": "technical_question_001",
+      "description": "Technical integration question",
+      "conversation_history": [
+        {
+          "sender": "prospect",
+          "content": "Hi, I'm evaluating your solution",
+          "timestamp": "2024-03-20T09:55:00Z"
+        }
+      ],
+      "current_message": {
+        "sender": "prospect",
+        "content": "Does your API support real-time data synchronization with Salesforce?",
+        "timestamp": "2024-03-20T10:00:00Z"
+      },
+      "ground_truth": {
+        "intent": {
+          "primary": "technical_inquiry",
+          "confidence": 0.9,
+          "entities": ["API", "Salesforce", "data synchronization"]
+        },
+        "expected_tools": {
+          "name": "knowledge_base",
+          "params": {
+            "query": "Salesforce integration API real-time sync",
+            "document_types": ["technical", "integration"]
+          }
+        },
+        "ideal_response": {
+          "content": "Yes, our API fully supports real-time synchronization with Salesforce through our dedicated connector. We use Salesforce's Streaming API for instant updates and provide both REST and SOAP endpoints. Would you like me to share our technical documentation about the Salesforce integration?",
+          "next_steps": ["Share API documentation", "Offer technical consultation"]
+        }
+      }
+    },
+    {
+      "id": "objection_handling_001",
+      "description": "Price objection from existing conversation",
+      "conversation_history": [
+        {
+          "sender": "prospect",
+          "content": "I've been looking at your premium plan",
+          "timestamp": "2024-03-20T09:50:00Z"
+        },
+        {
+          "sender": "assistant",
+          "content": "Our premium plan is $5,000/month and includes...",
+          "timestamp": "2024-03-20T09:51:00Z"
+        }
+      ],
+      "current_message": {
+        "sender": "prospect",
+        "content": "That's way more expensive than your competitors",
+        "timestamp": "2024-03-20T09:52:00Z"
+      },
+      "ground_truth": {
+        "intent": {
+          "primary": "price_objection",
+          "confidence": 0.95,
+          "entities": ["premium plan", "price", "competitors"]
+        },
+        "expected_tools": [
+          {
+            "name": "knowledge_base",
+            "params": {
+              "query": "premium plan value proposition competitor comparison",
+              "document_types": ["sales_playbook", "competitive"]
+            }
+          },
+          {
+            "name": "crm_tool",
+            "params": {
+              "prospect_id": "current",
+              "fields": ["company_size", "budget", "requirements"]
+            }
+          }
+        ],
+        "ideal_response": {
+          "content": "I understand your concern about the price difference. However, our premium plan offers several unique advantages that provide significant ROI: 1) Enterprise-grade security features, 2) 24/7 dedicated support, 3) Custom integrations. Many of our customers find that these features actually save them money in the long run. Would you like me to show you a detailed cost-benefit analysis?",
+          "next_steps": ["Share ROI calculator", "Schedule value demonstration"]
+        }
+      }
+    },
+    {
+      "id": "feature_inquiry_001",
+      "description": "Specific feature inquiry",
+      "conversation_history": [],
+      "current_message": {
+        "sender": "prospect",
+        "content": "Can your system handle multi-language processing?",
+        "timestamp": "2024-03-20T10:05:00Z"
+      },
+      "ground_truth": {
+        "intent": {
+          "primary": "feature_inquiry",
+          "confidence": 0.9,
+          "entities": ["multi-language", "processing"]
+        },
+        "expected_tools": {
+          "name": "knowledge_base",
+          "params": {
+            "query": "multi-language support features",
+            "document_types": ["features", "technical"]
+          }
+        },
+        "ideal_response": {
+          "content": "Yes, our system supports processing in over 30 languages with near-native accuracy. We use advanced neural machine translation and maintain language-specific models for optimal performance. Which specific languages are you interested in?",
+          "next_steps": ["Share language support documentation", "Demo multi-language features"]
+        }
+      }
+    },
+    {
+      "id": "follow_up_001",
+      "description": "Follow-up after demo",
+      "conversation_history": [
+        {
+          "sender": "assistant",
+          "content": "How did you find the demo yesterday?",
+          "timestamp": "2024-03-20T09:00:00Z"
+        }
+      ],
+      "current_message": {
+        "sender": "prospect",
+        "content": "The demo was great, but I need to discuss with my team. When do we need to decide for Q2 pricing?",
+        "timestamp": "2024-03-20T09:05:00Z"
+      },
+      "ground_truth": {
+        "intent": {
+          "primary": "timing_inquiry",
+          "secondary": "internal_discussion",
+          "confidence": 0.85,
+          "entities": ["demo", "Q2", "pricing", "team discussion"]
+        },
+        "expected_tools": [
+          {
+            "name": "crm_tool",
+            "params": {
+              "prospect_id": "current",
+              "fields": ["demo_date", "quote_details", "deal_stage"]
+            }
+          },
+          {
+            "name": "knowledge_base",
+            "params": {
+              "query": "Q2 pricing deadline special offers",
+              "document_types": ["pricing", "sales_playbook"]
+            }
+          }
+        ],
+        "ideal_response": {
+          "content": "I'm glad you found the demo helpful! For Q2 pricing, we're offering a 20% discount for contracts signed by April 15th. I understand you need to discuss with your team - would it help if I provided a detailed proposal document that you can share with them? We can also arrange a follow-up session with your team members if needed.",
+          "next_steps": [
+            "Send proposal document",
+            "Schedule team follow-up",
+            "Set reminder for April 15th deadline"
+          ]
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2024-03-20",
+    "total_cases": 5,
+    "categories": [
+      "pricing_inquiry",
+      "technical_question",
+      "objection_handling",
+      "feature_inquiry",
+      "follow_up"
+    ]
+  }
+} 
